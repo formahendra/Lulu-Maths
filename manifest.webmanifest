@@ -1,0 +1,10 @@
+{
+  "name": "Lulu Maths",
+  "short_name": "Lulu Maths",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ff",
+  "theme_color": "#7c4dff",
+  "description": "Child-friendly offline handwriting maths PWA",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7c4dff">
+<meta name="description" content="Lulu Maths - offline handwriting maths for children">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Lulu Maths</title>
+<style>
+:root{--purple:#7c4dff;--pink:#ff4f9a;--blue:#39a8ff;--green:#55c86a;--yellow:#ffd84d;--ink:#202027;--muted:#707078}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#f6f3ff;color:var(--ink);font-family:Arial,Helvetica,sans-serif}body{min-height:100vh;touch-action:manipulation}.app{max-width:980px;margin:auto;padding:14px 14px 36px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.brand{font-weight:900;font-size:28px}.brand b{color:var(--purple)}.pill{background:#fff;border:1px solid #ddd;padding:7px 10px;border-radius:999px;font-size:12px}.screen{display:none}.screen.active{display:block}.hero,.worksheet,.settings{background:#fff;border:2px solid #ece8fa;border-radius:24px;box-shadow:0 8px 28px rgba(0,0,0,.06)}.hero{padding:20px}.hero h1{margin:0 0 4px;font-size:30px}.hero p{margin:0;color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{border:0;border-radius:20px;padding:20px;text-align:left;background:#fff;box-shadow:0 7px 24px rgba(0,0,0,.09);cursor:pointer}.card .emoji{font-size:34px}.card h2{margin:8px 0 5px;font-size:19px}.card p{margin:0;font-size:13px;color:var(--muted)}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.btn{border:1px solid #ddd;border-radius:14px;background:#fff;padding:11px 14px;cursor:pointer}.btn.primary{background:var(--purple);color:#fff;border-color:var(--purple)}.btn.good{background:var(--green);color:#fff;border-color:var(--green)}.btn.danger{background:#fff0f0;color:#9d1b1b;border-color:#f1caca}.btn:disabled{opacity:.45}.progress{height:9px;background:#e7e4ee;border-radius:99px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue))}.worksheet{padding:18px}.qtitle{font-weight:900;font-size:18px}.prompt{font-size:27px;font-weight:900;line-height:1.35;margin:7px 0 12px}.canvasWrap{position:relative;border:2px dashed #bbb;border-radius:18px;overflow:hidden;background:#fff}.writing{display:block;width:100%;height:220px;touch-action:none;background:#fff}.hint{font-size:12px;color:var(--muted);margin-top:7px}.status{min-height:22px;margin:9px 0;font-weight:800}.success{color:#18833a}.settings{margin-top:16px;padding:15px}.settings summary{font-weight:900;cursor:pointer}.jsonbox{width:100%;min-height:150px;margin-top:10px;border:1px solid #ccc;border-radius:12px;padding:10px;font-family:monospace}.small{font-size:12px;color:var(--muted)}.footer-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.dots{flex:1;text-align:center;font-size:12px;color:var(--muted)}footer{text-align:center;font-size:9px;color:var(--muted);margin-top:10px}@media(max-width:700px){.cards{grid-template-columns:1fr}.prompt{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar"><div class="brand">🌈 <b>Lulu</b> Maths</div><div class="pill" id="net">Checking…</div></div>
+
+  <section id="home" class="screen active">
+    <div class="hero"><h1>Let's learn and play! ✨</h1><p>Write with a stylus or finger. Your work is saved on this tablet.</p><div class="cards" id="cards"></div></div>
+    <details class="settings"><summary>Parent / Teacher Tools</summary>
+      <p class="small">Exercise sets live in <code>exercises.js</code>. You can add pages and new categories without changing the handwriting engine.</p>
+      <button class="btn" id="exportExercises">Export exercise library</button>
+      <label class="btn" for="importExercises">Import exercise JSON</label><input id="importExercises" type="file" accept=".json,application/json" hidden>
+      <button class="btn danger" id="reset">Reset saved handwriting</button>
+      <textarea id="preview" class="jsonbox" readonly></textarea>
+    </details>
+    <footer>Works offline after the app has been opened once online and installed.</footer>
+  </section>
+
+  <section id="practice" class="screen">
+    <div class="toolbar"><button class="btn" id="homeBtn">← Home</button><div><strong id="categoryTitle"></strong><div class="small" id="progressText"></div></div><button class="btn" id="shuffle">🔀 Shuffle</button></div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="worksheet">
+      <div class="qtitle" id="qtitle"></div><div class="prompt" id="prompt"></div>
+      <div class="canvasWrap"><canvas id="canvas" class="writing"></canvas></div>
+      <div class="hint">✏️ Write here with your stylus. Your handwriting is stored on this tablet.</div>
+      <div id="status" class="status"></div>
+      <div class="toolbar"><button class="btn" id="undo">↶ Undo</button><button class="btn danger" id="clear">Clear</button><button class="btn good" id="save">💾 Save</button></div>
+      <div class="footer-actions"><button class="btn" id="prev">← Previous</button><div class="dots" id="dots"></div><button class="btn primary" id="next">Next →</button></div>
+    </div>
+  </section>
+</div>
+<script src="exercises.js"></script>
+<script>
+(() => {
+  const KEY='lulu-maths-state-v2';
+  const LIB='lulu-maths-library-v1';
+  const state=JSON.parse(localStorage.getItem(KEY)||'{}');
+  state.drawings ||= {}; state.progress ||= {};
+  try {
+    const savedLibrary=JSON.parse(localStorage.getItem(LIB)||'null');
+    if(savedLibrary && typeof savedLibrary==='object') window.LULU_EXERCISES=savedLibrary;
+  } catch {}
+  let category='', items=[], index=0, strokes=[];
+  const $=id=>document.getElementById(id), canvas=$('canvas'), ctx=canvas.getContext('2d');
+  let drawing=false, current=null;
+
+  function persist(){localStorage.setItem(KEY,JSON.stringify(state))}
+  function sizeCanvas(){const r=canvas.getBoundingClientRect(),d=Math.max(1,devicePixelRatio||1);canvas.width=Math.round(r.width*d);canvas.height=Math.round(r.height*d);ctx.setTransform(d,0,0,d,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#111';ctx.lineWidth=4;redraw()}
+  function redraw(){const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);for(const s of strokes)drawStroke(s)}
+  function drawStroke(s){if(s.length<2)return;ctx.beginPath();ctx.moveTo(s[0].x,s[0].y);for(let i=1;i<s.length;i++){ctx.lineTo(s[i].x,s[i].y)}ctx.stroke()}
+  function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+  function saveDrawing(){if(!items[index])return;state.drawings[items[index].id]=strokes;persist()}
+  function loadDrawing(){strokes=state.drawings[items[index]?.id]||[];redraw()}
+  function clearDrawing(){strokes=[];redraw();state.drawings[items[index].id]=[];persist();$('status').textContent='';$('status').className='status'}
+  function undo(){strokes.pop();redraw();saveDrawing()}
+
+  canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drawing=true;current=[point(e)]});
+  canvas.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();const p=point(e),last=current[current.length-1];current.push(p);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke()});
+  const end=()=>{if(!drawing)return;drawing=false;if(current&&current.length){strokes.push(current);saveDrawing()}current=null};
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('pointerleave',()=>{});
+
+  function renderCards(){const wrap=$('cards');wrap.innerHTML='';const icons=['➖','➕','📖','🔢','🔤','🧩'];Object.keys(window.LULU_EXERCISES).forEach((key,i)=>{const data=window.LULU_EXERCISES[key];const label=key.replace(/([A-Z])/g,' $1').replace(/^./,m=>m.toUpperCase());const b=document.createElement('button');b.className='card';b.innerHTML=`<div class="emoji">${icons[i%icons.length]}</div><h2>${label}</h2><p>${data.length} exercises</p>`;b.onclick=()=>open(key);wrap.appendChild(b)}) ;$('preview').value=JSON.stringify(window.LULU_EXERCISES,null,2)}
+  function open(key){category=key;items=[...window.LULU_EXERCISES[key]];index=0;$('home').classList.remove('active');$('practice').classList.add('active');render()}
+  function render(){const it=items[index];$('categoryTitle').textContent=category.replace(/([A-Z])/g,' $1').replace(/^./,m=>m.toUpperCase());$('progressText').textContent=`${index+1} of ${items.length}`;$('bar').style.width=`${((index+1)/items.length)*100}%`;$('qtitle').textContent=`Question ${index+1}`;$('prompt').textContent=it.prompt;$('dots').textContent=`${index+1} / ${items.length}`;$('prev').disabled=index===0;$('next').disabled=index===items.length-1;$('status').textContent='';$('status').className='status';setTimeout(()=>{sizeCanvas();loadDrawing()},0)}
+  function save(){saveDrawing();state.progress[items[index].id]=Date.now();persist();$('status').textContent='Saved ✓';$('status').className='status success'}
+  $('homeBtn').onclick=()=>{$('practice').classList.remove('active');$('home').classList.add('active');renderCards()};$('prev').onclick=()=>{saveDrawing();if(index>0){index--;render()}};$('next').onclick=()=>{saveDrawing();if(index<items.length-1){index++;render()}else{$('status').textContent='Fantastic work! 🎉';$('status').className='status success'}};$('undo').onclick=undo;$('clear').onclick=clearDrawing;$('save').onclick=save;
+  $('shuffle').onclick=()=>{items.sort(()=>Math.random()-.5);index=0;render()};
+  $('exportExercises').onclick=()=>{const b=new Blob([JSON.stringify(window.LULU_EXERCISES,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='lulu-exercises.json';a.click();URL.revokeObjectURL(a.href)};
+  $('importExercises').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data||typeof data!=='object')throw Error();for(const [k,v] of Object.entries(data)){if(!Array.isArray(v))throw Error()}window.LULU_EXERCISES=data;localStorage.setItem(LIB,JSON.stringify(data));renderCards();alert('Exercise library imported and saved on this tablet.')}catch{alert('The file is not valid exercise JSON.')}};
+  $('reset').onclick=()=>{if(confirm('Clear saved handwriting and return to the built-in exercise library?')){state.drawings={};state.progress={};localStorage.removeItem(LIB);persist();location.reload()}};
+  function net(){ $('net').textContent=navigator.onLine?'Online • offline mode ready':'Offline • working'; } window.addEventListener('online',net);window.addEventListener('offline',net);net();renderCards();
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(console.error);
+})();
+</script>
+</body></html>
