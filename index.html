@@ -1,88 +1,417 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#7c4dff">
-<meta name="description" content="Lulu Maths - offline handwriting maths for children">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Lulu Maths</title>
-<style>
-:root{--purple:#7c4dff;--pink:#ff4f9a;--blue:#39a8ff;--green:#55c86a;--yellow:#ffd84d;--ink:#202027;--muted:#707078}
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:#f6f3ff;color:var(--ink);font-family:Arial,Helvetica,sans-serif}body{min-height:100vh;touch-action:manipulation}.app{max-width:980px;margin:auto;padding:14px 14px 36px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.brand{font-weight:900;font-size:28px}.brand b{color:var(--purple)}.pill{background:#fff;border:1px solid #ddd;padding:7px 10px;border-radius:999px;font-size:12px}.screen{display:none}.screen.active{display:block}.hero,.worksheet,.settings{background:#fff;border:2px solid #ece8fa;border-radius:24px;box-shadow:0 8px 28px rgba(0,0,0,.06)}.hero{padding:20px}.hero h1{margin:0 0 4px;font-size:30px}.hero p{margin:0;color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.card{border:0;border-radius:20px;padding:20px;text-align:left;background:#fff;box-shadow:0 7px 24px rgba(0,0,0,.09);cursor:pointer}.card .emoji{font-size:34px}.card h2{margin:8px 0 5px;font-size:19px}.card p{margin:0;font-size:13px;color:var(--muted)}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.btn{border:1px solid #ddd;border-radius:14px;background:#fff;padding:11px 14px;cursor:pointer}.btn.primary{background:var(--purple);color:#fff;border-color:var(--purple)}.btn.good{background:var(--green);color:#fff;border-color:var(--green)}.btn.danger{background:#fff0f0;color:#9d1b1b;border-color:#f1caca}.btn:disabled{opacity:.45}.progress{height:9px;background:#e7e4ee;border-radius:99px;overflow:hidden;margin:12px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue))}.worksheet{padding:18px}.qtitle{font-weight:900;font-size:18px}.prompt{font-size:27px;font-weight:900;line-height:1.35;margin:7px 0 12px}.canvasWrap{position:relative;border:2px dashed #bbb;border-radius:18px;overflow:hidden;background:#fff}.writing{display:block;width:100%;height:220px;touch-action:none;background:#fff}.hint{font-size:12px;color:var(--muted);margin-top:7px}.status{min-height:22px;margin:9px 0;font-weight:800}.success{color:#18833a}.settings{margin-top:16px;padding:15px}.settings summary{font-weight:900;cursor:pointer}.jsonbox{width:100%;min-height:150px;margin-top:10px;border:1px solid #ccc;border-radius:12px;padding:10px;font-family:monospace}.small{font-size:12px;color:var(--muted)}.footer-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.dots{flex:1;text-align:center;font-size:12px;color:var(--muted)}footer{text-align:center;font-size:9px;color:var(--muted);margin-top:10px}@media(max-width:700px){.cards{grid-template-columns:1fr}.prompt{font-size:24px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#7c4dff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="Lulu Maths - offline subtraction practice with stylus handwriting">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>Lulu Maths</title>
+  <style>
+    :root { --purple:#7c4dff; --pink:#ff4f9a; --blue:#36a9ff; --yellow:#ffd84d; --green:#55c86a; --ink:#202026; --muted:#6f6f78; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; padding:0; background:#f6f3ff; color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+    body { min-height:100vh; touch-action:manipulation; }
+    button,input { font:inherit; }
+    .app { max-width:980px; margin:0 auto; min-height:100vh; padding:14px 16px 28px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .brand { font-weight:900; font-size:27px; letter-spacing:-.5px; }
+    .brand span { color:var(--purple); }
+    .offline { font-size:12px; padding:7px 10px; border-radius:999px; background:#fff; border:1px solid #ddd; }
+    .hero { background:#fff; border:2px solid #ece7ff; border-radius:22px; padding:20px; box-shadow:0 8px 24px rgba(0,0,0,.05); }
+    h1 { font-size:29px; margin:0 0 7px; }
+    .subtitle { margin:0; color:var(--muted); line-height:1.45; }
+    .card { display:flex; align-items:center; gap:16px; width:100%; margin-top:20px; border:2px solid #e9e2ff; border-radius:20px; padding:18px; text-align:left; background:#fff; box-shadow:0 8px 20px rgba(0,0,0,.06); cursor:pointer; }
+    .card .emoji { font-size:42px; }
+    .card h2 { margin:0 0 4px; font-size:20px; }
+    .card p { margin:0; color:var(--muted); font-size:14px; }
+    .screen { display:none; }
+    .screen.active { display:block; }
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:10px 0; }
+    .btn { border:1px solid #ddd; border-radius:12px; padding:10px 13px; background:#fff; cursor:pointer; }
+    .btn.primary { background:var(--purple); color:#fff; border-color:var(--purple); }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .btn.small { padding:7px 9px; font-size:12px; }
+    .worksheet { background:#fff; border-radius:21px; border:2px solid #ebe8f7; padding:14px; }
+    .worksheet-title { font-size:18px; font-weight:900; margin:0 0 4px; }
+    .small { font-size:12px; color:var(--muted); }
+    .instructions { margin:0 0 10px; color:var(--muted); font-size:13px; }
+    .progress { height:8px; background:#e8e5ee; border-radius:999px; overflow:hidden; margin:9px 0 12px; }
+    .progress > div { height:100%; background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue)); width:0; transition:width .2s; }
+    .questions { display:flex; flex-direction:column; gap:5px; }
+    .question-row { display:grid; grid-template-columns:25px minmax(115px, 145px) minmax(80px,1fr) 30px; align-items:center; gap:7px; min-height:51px; padding:3px 0; border-bottom:1px solid #efedf5; }
+    .qnum { font-size:13px; font-weight:800; color:#5d536f; }
+    .prompt { font-size:17px; font-weight:800; white-space:nowrap; }
+    .answer-canvas { display:block; width:100%; height:44px; border:1.5px dashed #aaa4ba; border-radius:9px; background:#fff; touch-action:none; }
+    .answer-canvas:focus { outline:2px solid #b39aff; outline-offset:1px; }
+    .clear-answer { border:1px solid #ddd; border-radius:9px; background:#fff; font-size:17px; line-height:1; height:30px; width:30px; cursor:pointer; color:#6f657d; }
+    .save-note { margin-top:10px; padding:8px 10px; border-radius:10px; background:#f7f4ff; font-size:12px; color:#5c5471; }
+    .page-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; }
+    .page-label { text-align:center; flex:1; font-size:13px; color:var(--muted); }
+    .status { min-height:20px; margin-top:8px; font-weight:800; color:#137b32; font-size:13px; }
+    .settings { margin-top:16px; background:#fff; border:2px solid #ebe8f7; border-radius:18px; padding:14px; }
+    .settings summary { font-weight:800; cursor:pointer; }
+    .settings button,.settings label { margin:8px 8px 0 0; display:inline-block; }
+    .json-box { width:100%; min-height:105px; margin-top:10px; padding:10px; border:1px solid #ccc; border-radius:10px; font:12px monospace; }
+    @media (max-width:520px) {
+      .app { padding:10px 10px 24px; }
+      .brand { font-size:23px; }
+      .hero { padding:16px; }
+      h1 { font-size:25px; }
+      .worksheet { padding:10px; }
+      .question-row { grid-template-columns:21px minmax(102px, 116px) minmax(55px,1fr) 27px; gap:5px; min-height:49px; }
+      .prompt { font-size:15px; }
+      .answer-canvas { height:42px; }
+      .clear-answer { width:27px; height:28px; }
+      .btn { padding:9px 10px; }
+    }
+  </style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar"><div class="brand">🌈 <b>Lulu</b> Maths</div><div class="pill" id="net">Checking…</div></div>
+  <div class="topbar">
+    <div class="brand">🌈 <span>Lulu</span> Maths</div>
+    <div class="offline" id="onlineState">Checking…</div>
+  </div>
 
   <section id="home" class="screen active">
-    <div class="hero"><h1>Let's learn and play! ✨</h1><p>Write with a stylus or finger. Your work is saved on this tablet.</p><div class="cards" id="cards"></div></div>
-    <details class="settings"><summary>Parent / Teacher Tools</summary>
-      <p class="small">Exercise sets live in <code>exercises.js</code>. You can add pages and new categories without changing the handwriting engine.</p>
-      <button class="btn" id="exportExercises">Export exercise library</button>
-      <label class="btn" for="importExercises">Import exercise JSON</label><input id="importExercises" type="file" accept=".json,application/json" hidden>
-      <button class="btn danger" id="reset">Reset saved handwriting</button>
-      <textarea id="preview" class="jsonbox" readonly></textarea>
+    <div class="hero">
+      <h1>Let's practise subtraction! ✨</h1>
+      <p class="subtitle">Write each answer in its box using a stylus or your finger. Your work is saved on this tablet.</p>
+      <button class="card" id="startSubtraction">
+        <div class="emoji">➖</div>
+        <div><h2>Subtraction</h2><p id="exerciseSummary">20 questions • 10 questions per page</p></div>
+      </button>
+    </div>
+    <details class="settings">
+      <summary>Parent / Teacher Tools</summary>
+      <p class="small">You can export the exercise list or import more subtraction questions. Pages are created automatically, with 10 questions on each page.</p>
+      <button class="btn" id="exportData">Export exercise data</button>
+      <label class="btn" for="importFile">Import exercise JSON</label>
+      <input id="importFile" type="file" accept=".json,application/json" hidden>
+      <button class="btn" id="resetProgress">Reset saved handwriting</button>
+      <p class="small">Add questions in this format. Use a new unique ID for each question:</p>
+      <textarea class="json-box" id="exercisePreview" readonly></textarea>
+      <div class="small">After adding questions to the hosted file, open the app while online so it can download the update.</div>
     </details>
-    <footer>Works offline after the app has been opened once online and installed.</footer>
   </section>
 
   <section id="practice" class="screen">
-    <div class="toolbar"><button class="btn" id="homeBtn">← Home</button><div><strong id="categoryTitle"></strong><div class="small" id="progressText"></div></div><button class="btn" id="shuffle">🔀 Shuffle</button></div>
-    <div class="progress"><div id="bar"></div></div>
+    <div class="toolbar">
+      <button class="btn" id="homeBtn">← Home</button>
+      <div><strong>Subtraction</strong><div class="small" id="pageInfo">Page 1</div></div>
+      <div class="small" id="totalInfo"></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+
     <div class="worksheet">
-      <div class="qtitle" id="qtitle"></div><div class="prompt" id="prompt"></div>
-      <div class="canvasWrap"><canvas id="canvas" class="writing"></canvas></div>
-      <div class="hint">✏️ Write here with your stylus. Your handwriting is stored on this tablet.</div>
-      <div id="status" class="status"></div>
-      <div class="toolbar"><button class="btn" id="undo">↶ Undo</button><button class="btn danger" id="clear">Clear</button><button class="btn good" id="save">💾 Save</button></div>
-      <div class="footer-actions"><button class="btn" id="prev">← Previous</button><div class="dots" id="dots"></div><button class="btn primary" id="next">Next →</button></div>
+      <div class="worksheet-title">Write the answer in the box ✏️</div>
+      <p class="instructions">Use your stylus or finger. Tap × beside a question to clear just that answer.</p>
+      <div class="questions" id="questions"></div>
+      <div class="save-note">💾 Your handwriting saves as you write. Tapping <b>Next page</b> saves this whole page before moving on.</div>
+      <div class="status" id="status" aria-live="polite"></div>
+      <div class="page-actions">
+        <button class="btn" id="prevBtn">← Previous</button>
+        <div class="page-label" id="pageLabel">Page 1 of 2</div>
+        <button class="btn primary" id="nextBtn">Next page →</button>
+      </div>
     </div>
   </section>
 </div>
+
 <script src="exercises.js"></script>
 <script>
 (() => {
-  const KEY='lulu-maths-state-v2';
-  const LIB='lulu-maths-library-v1';
-  const state=JSON.parse(localStorage.getItem(KEY)||'{}');
-  state.drawings ||= {}; state.progress ||= {};
-  try {
-    const savedLibrary=JSON.parse(localStorage.getItem(LIB)||'null');
-    if(savedLibrary && typeof savedLibrary==='object') window.LULU_EXERCISES=savedLibrary;
-  } catch {}
-  let category='', items=[], index=0, strokes=[];
-  const $=id=>document.getElementById(id), canvas=$('canvas'), ctx=canvas.getContext('2d');
-  let drawing=false, current=null;
+  const PROGRESS_KEY = 'lulu-maths-v1'; // Keep the original key so previously saved answers can be restored.
+  const CUSTOM_EXERCISES_KEY = 'lulu-maths-custom-subtraction-v1';
+  const byId = id => document.getElementById(id);
+  const storedState = safeParse(localStorage.getItem(PROGRESS_KEY), {});
+  const state = {
+    pageIndex: 0,
+    drawings: storedState.drawings || {},
+    progress: storedState.progress || {},
+    items: [],
+    customItems: safeParse(localStorage.getItem(CUSTOM_EXERCISES_KEY), [])
+  };
 
-  function persist(){localStorage.setItem(KEY,JSON.stringify(state))}
-  function sizeCanvas(){const r=canvas.getBoundingClientRect(),d=Math.max(1,devicePixelRatio||1);canvas.width=Math.round(r.width*d);canvas.height=Math.round(r.height*d);ctx.setTransform(d,0,0,d,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#111';ctx.lineWidth=4;redraw()}
-  function redraw(){const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);for(const s of strokes)drawStroke(s)}
-  function drawStroke(s){if(s.length<2)return;ctx.beginPath();ctx.moveTo(s[0].x,s[0].y);for(let i=1;i<s.length;i++){ctx.lineTo(s[i].x,s[i].y)}ctx.stroke()}
-  function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
-  function saveDrawing(){if(!items[index])return;state.drawings[items[index].id]=strokes;persist()}
-  function loadDrawing(){strokes=state.drawings[items[index]?.id]||[];redraw()}
-  function clearDrawing(){strokes=[];redraw();state.drawings[items[index].id]=[];persist();$('status').textContent='';$('status').className='status'}
-  function undo(){strokes.pop();redraw();saveDrawing()}
+  const home = byId('home');
+  const practice = byId('practice');
+  const questionsEl = byId('questions');
+  let finishedMessage = '';
 
-  canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drawing=true;current=[point(e)]});
-  canvas.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();const p=point(e),last=current[current.length-1];current.push(p);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke()});
-  const end=()=>{if(!drawing)return;drawing=false;if(current&&current.length){strokes.push(current);saveDrawing()}current=null};
-  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('pointerleave',()=>{});
+  function safeParse(text, fallback) {
+    try { return text ? JSON.parse(text) : fallback; } catch (_) { return fallback; }
+  }
 
-  function renderCards(){const wrap=$('cards');wrap.innerHTML='';const icons=['➖','➕','📖','🔢','🔤','🧩'];Object.keys(window.LULU_EXERCISES).forEach((key,i)=>{const data=window.LULU_EXERCISES[key];const label=key.replace(/([A-Z])/g,' $1').replace(/^./,m=>m.toUpperCase());const b=document.createElement('button');b.className='card';b.innerHTML=`<div class="emoji">${icons[i%icons.length]}</div><h2>${label}</h2><p>${data.length} exercises</p>`;b.onclick=()=>open(key);wrap.appendChild(b)}) ;$('preview').value=JSON.stringify(window.LULU_EXERCISES,null,2)}
-  function open(key){category=key;items=[...window.LULU_EXERCISES[key]];index=0;$('home').classList.remove('active');$('practice').classList.add('active');render()}
-  function render(){const it=items[index];$('categoryTitle').textContent=category.replace(/([A-Z])/g,' $1').replace(/^./,m=>m.toUpperCase());$('progressText').textContent=`${index+1} of ${items.length}`;$('bar').style.width=`${((index+1)/items.length)*100}%`;$('qtitle').textContent=`Question ${index+1}`;$('prompt').textContent=it.prompt;$('dots').textContent=`${index+1} / ${items.length}`;$('prev').disabled=index===0;$('next').disabled=index===items.length-1;$('status').textContent='';$('status').className='status';setTimeout(()=>{sizeCanvas();loadDrawing()},0)}
-  function save(){saveDrawing();state.progress[items[index].id]=Date.now();persist();$('status').textContent='Saved ✓';$('status').className='status success'}
-  $('homeBtn').onclick=()=>{$('practice').classList.remove('active');$('home').classList.add('active');renderCards()};$('prev').onclick=()=>{saveDrawing();if(index>0){index--;render()}};$('next').onclick=()=>{saveDrawing();if(index<items.length-1){index++;render()}else{$('status').textContent='Fantastic work! 🎉';$('status').className='status success'}};$('undo').onclick=undo;$('clear').onclick=clearDrawing;$('save').onclick=save;
-  $('shuffle').onclick=()=>{items.sort(()=>Math.random()-.5);index=0;render()};
-  $('exportExercises').onclick=()=>{const b=new Blob([JSON.stringify(window.LULU_EXERCISES,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='lulu-exercises.json';a.click();URL.revokeObjectURL(a.href)};
-  $('importExercises').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data||typeof data!=='object')throw Error();for(const [k,v] of Object.entries(data)){if(!Array.isArray(v))throw Error()}window.LULU_EXERCISES=data;localStorage.setItem(LIB,JSON.stringify(data));renderCards();alert('Exercise library imported and saved on this tablet.')}catch{alert('The file is not valid exercise JSON.')}};
-  $('reset').onclick=()=>{if(confirm('Clear saved handwriting and return to the built-in exercise library?')){state.drawings={};state.progress={};localStorage.removeItem(LIB);persist();location.reload()}};
-  function net(){ $('net').textContent=navigator.onLine?'Online • offline mode ready':'Offline • working'; } window.addEventListener('online',net);window.addEventListener('offline',net);net();renderCards();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(console.error);
+  function getItems() {
+    const base = Array.isArray(window.LULU_EXERCISES?.subtraction) ? window.LULU_EXERCISES.subtraction : [];
+    const all = new Map();
+    base.forEach(item => { if (item && item.id && item.prompt) all.set(String(item.id), normalizeItem(item)); });
+    state.customItems.forEach(item => { if (item && item.id && item.prompt) all.set(String(item.id), normalizeItem(item)); });
+    return [...all.values()];
+  }
+
+  function normalizeItem(item) {
+    return { id:String(item.id), prompt:String(item.prompt), answer:item.answer == null ? '' : String(item.answer) };
+  }
+
+  function normalizePrompt(prompt) {
+    // The answer canvas sits immediately after the equals sign, so remove old underscore blanks if present.
+    return String(prompt).replace(/[_\s]+$/, '').trim();
+  }
+
+  function persistProgress() {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({drawings:state.drawings, progress:state.progress}));
+  }
+
+  function persistCustomItems() {
+    localStorage.setItem(CUSTOM_EXERCISES_KEY, JSON.stringify(state.customItems));
+  }
+
+  function currentPageItems() {
+    return state.items.slice(state.pageIndex * 10, state.pageIndex * 10 + 10);
+  }
+
+  function pageCount() {
+    return Math.max(1, Math.ceil(state.items.length / 10));
+  }
+
+  function showHome() {
+    practice.classList.remove('active');
+    home.classList.add('active');
+    byId('exercisePreview').value = JSON.stringify({subtraction:state.items}, null, 2);
+    byId('exerciseSummary').textContent = `${state.items.length} questions • 10 questions per page`;
+  }
+
+  function openPractice() {
+    state.items = getItems();
+    state.pageIndex = 0;
+    finishedMessage = '';
+    home.classList.remove('active');
+    practice.classList.add('active');
+    renderPage();
+  }
+
+  function initCanvas(canvas, item) {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
+    canvas.width = Math.max(1, Math.round(rect.width * dpr));
+    canvas.height = Math.max(1, Math.round(rect.height * dpr));
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#171717';
+    ctx.lineWidth = 3.4;
+    canvas.dataset.exerciseId = item.id;
+    canvas.dataset.hasDrawing = 'false';
+
+    const saved = state.drawings[item.id];
+    const dataUrl = saved && (saved.image || saved.dataUrl);
+    if (dataUrl) {
+      canvas.dataset.hasDrawing = 'true';
+      const img = new Image();
+      img.onload = () => {
+        const currentRect = canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, currentRect.width, currentRect.height);
+        ctx.drawImage(img, 0, 0, currentRect.width, currentRect.height);
+      };
+      img.src = dataUrl;
+    }
+
+    let active = false;
+    let previousPoint = null;
+    canvas.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      active = true;
+      canvas.dataset.hasDrawing = 'true';
+      canvas.setPointerCapture(event.pointerId);
+      const r = canvas.getBoundingClientRect();
+      previousPoint = {x:event.clientX-r.left, y:event.clientY-r.top};
+      ctx.beginPath();
+      ctx.arc(previousPoint.x, previousPoint.y, 1.7, 0, Math.PI*2);
+      ctx.fillStyle = '#171717';
+      ctx.fill();
+    });
+    canvas.addEventListener('pointermove', event => {
+      if (!active) return;
+      event.preventDefault();
+      const r = canvas.getBoundingClientRect();
+      const point = {x:event.clientX-r.left, y:event.clientY-r.top};
+      ctx.beginPath();
+      ctx.moveTo(previousPoint.x, previousPoint.y);
+      ctx.lineTo(point.x, point.y);
+      ctx.lineWidth = event.pointerType === 'pen' && event.pressure ? 2.2 + event.pressure*2.3 : 3.4;
+      ctx.stroke();
+      previousPoint = point;
+    });
+    const finishStroke = () => {
+      if (!active) return;
+      active = false;
+      previousPoint = null;
+      saveCanvas(canvas, item);
+      byId('status').textContent = 'Saved ✓';
+    };
+    canvas.addEventListener('pointerup', finishStroke);
+    canvas.addEventListener('pointercancel', finishStroke);
+  }
+
+  function saveCanvas(canvas, item) {
+    if (canvas.dataset.hasDrawing === 'true') {
+      state.drawings[item.id] = {image:canvas.toDataURL('image/png'), updatedAt:Date.now()};
+      state.progress[item.id] = {savedAt:Date.now()};
+    }
+    persistProgress();
+  }
+
+  function saveCurrentPage() {
+    const canvases = [...questionsEl.querySelectorAll('canvas.answer-canvas')];
+    canvases.forEach(canvas => {
+      const item = state.items.find(ex => ex.id === canvas.dataset.exerciseId);
+      if (item) saveCanvas(canvas, item);
+    });
+    persistProgress();
+    byId('status').textContent = 'This page is saved ✓';
+  }
+
+  function clearAnswer(canvas, item) {
+    const rect = canvas.getBoundingClientRect();
+    const ctx = canvas.getContext('2d');
+    const dpr = canvas.width / Math.max(1, rect.width);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    canvas.dataset.hasDrawing = 'false';
+    delete state.drawings[item.id];
+    delete state.progress[item.id];
+    persistProgress();
+    byId('status').textContent = 'Answer cleared.';
+  }
+
+  function renderPage() {
+    state.items = getItems();
+    const totalPages = pageCount();
+    if (state.pageIndex >= totalPages) state.pageIndex = totalPages - 1;
+    const pageItems = currentPageItems();
+    questionsEl.innerHTML = '';
+    byId('pageInfo').textContent = `Questions ${state.pageIndex*10+1}–${state.pageIndex*10+pageItems.length}`;
+    byId('totalInfo').textContent = `${state.items.length} total`;
+    byId('pageLabel').textContent = `Page ${state.pageIndex+1} of ${totalPages}`;
+    byId('progressBar').style.width = `${(state.pageIndex+1)/totalPages*100}%`;
+    byId('prevBtn').disabled = state.pageIndex === 0;
+    byId('nextBtn').textContent = state.pageIndex === totalPages-1 ? 'Finish ✓' : 'Next page →';
+    byId('status').textContent = finishedMessage;
+
+    pageItems.forEach((item, offset) => {
+      const row = document.createElement('div');
+      row.className = 'question-row';
+      const number = document.createElement('span');
+      number.className = 'qnum';
+      number.textContent = `${state.pageIndex*10+offset+1}.`;
+      const prompt = document.createElement('span');
+      prompt.className = 'prompt';
+      prompt.textContent = normalizePrompt(item.prompt);
+      const canvas = document.createElement('canvas');
+      canvas.className = 'answer-canvas';
+      canvas.setAttribute('aria-label', `Handwriting answer for ${normalizePrompt(item.prompt)}`);
+      canvas.setAttribute('role','img');
+      const clear = document.createElement('button');
+      clear.className = 'clear-answer';
+      clear.type = 'button';
+      clear.textContent = '×';
+      clear.title = 'Clear this answer';
+      clear.setAttribute('aria-label','Clear this answer');
+      clear.addEventListener('click', () => clearAnswer(canvas, item));
+      row.append(number, prompt, canvas, clear);
+      questionsEl.appendChild(row);
+      requestAnimationFrame(() => initCanvas(canvas, item));
+    });
+    byId('exercisePreview').value = JSON.stringify({subtraction:state.items}, null, 2);
+  }
+
+  function movePage(direction) {
+    // Save every answer on the visible page before navigating.
+    saveCurrentPage();
+    const target = state.pageIndex + direction;
+    if (target < 0) return;
+    if (target >= pageCount()) {
+      finishedMessage = 'Amazing work! You reached the end of the questions 🎉';
+      byId('status').textContent = finishedMessage;
+      return;
+    }
+    state.pageIndex = target;
+    finishedMessage = '';
+    renderPage();
+  }
+
+  byId('startSubtraction').addEventListener('click', openPractice);
+  byId('homeBtn').addEventListener('click', () => { saveCurrentPage(); showHome(); });
+  byId('prevBtn').addEventListener('click', () => movePage(-1));
+  byId('nextBtn').addEventListener('click', () => movePage(1));
+
+  byId('exportData').addEventListener('click', () => {
+    const data = JSON.stringify({subtraction:getItems()}, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lulu-subtraction-exercises.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  byId('importFile').addEventListener('change', async event => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      const incoming = Array.isArray(parsed) ? parsed : parsed.subtraction;
+      if (!Array.isArray(incoming) || incoming.some(x => !x || !x.id || !x.prompt)) {
+        throw new Error('Expected an array of exercise objects or {subtraction:[...]}');
+      }
+      const byExerciseId = new Map(state.customItems.map(x => [String(x.id), normalizeItem(x)]));
+      incoming.forEach(item => byExerciseId.set(String(item.id), normalizeItem(item)));
+      state.customItems = [...byExerciseId.values()];
+      persistCustomItems();
+      state.items = getItems();
+      byId('exerciseSummary').textContent = `${state.items.length} questions • 10 questions per page`;
+      byId('exercisePreview').value = JSON.stringify({subtraction:state.items}, null, 2);
+      alert('Exercise set imported. Pages have been updated.');
+      event.target.value = '';
+    } catch (err) {
+      alert('Could not import this file. Please use JSON with id, prompt and answer fields.');
+    }
+  });
+
+  byId('resetProgress').addEventListener('click', () => {
+    if (confirm('Clear all saved handwriting and progress on this tablet? Your questions will remain.')) {
+      state.drawings = {};
+      state.progress = {};
+      persistProgress();
+      if (practice.classList.contains('active')) renderPage();
+      alert('Saved handwriting has been cleared.');
+    }
+  });
+
+  function onlineState() {
+    byId('onlineState').textContent = navigator.onLine ? 'Online • offline-ready' : 'Offline • ready';
+  }
+  window.addEventListener('online', onlineState);
+  window.addEventListener('offline', onlineState);
+  window.addEventListener('resize', () => {
+    if (practice.classList.contains('active')) renderPage();
+  });
+  onlineState();
+  state.items = getItems();
+  byId('exerciseSummary').textContent = `${state.items.length} questions • 10 questions per page`;
+  byId('exercisePreview').value = JSON.stringify({subtraction:state.items}, null, 2);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker could not register:', err));
+  }
 })();
 </script>
-</body></html>
+</body>
+</html>

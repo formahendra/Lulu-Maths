@@ -1,39 +1,42 @@
-# Lulu Maths PWA
+# Lulu Maths PWA — Updated
 
-Touch/stylus-friendly maths practice app for Android tablets and iPads.
+This is the updated subtraction-only version for Android tablets and iPads.
 
-## What it does
-- Stylus or finger handwriting on an answer canvas
-- Undo / Clear / Save
-- Saves handwriting locally on the device
-- Multiple exercise categories
-- Shuffle questions
-- PWA install support
-- Offline app shell after first online load
-- Exercise library kept separate in `exercises.js`
-- Parent/Teacher import and export of exercise JSON
+## Changes in this version
+- Removed Addition and Word Problems from the home screen.
+- Shows up to 10 subtraction questions on each page.
+- A small handwriting canvas sits next to each subtraction expression.
+- Removed the Save button. Each pen stroke auto-saves; **Next page** and **Previous** also save the visible page before navigating.
+- Each answer has its own clear (×) button.
+- Page count adjusts automatically when exercises are added or imported.
+- Handwriting remains stored locally on the tablet; it is not uploaded to GitHub.
+- Offline app cache version updated to v3.
 
-## Install on Android
-A service worker requires HTTPS (or localhost during development). Host this folder on any static HTTPS host such as GitHub Pages, Netlify, Cloudflare Pages or your own web server.
+## Install/update
+Host on HTTPS (for example, GitHub Pages). When replacing these files, keep `index.html`, `exercises.js`, `sw.js`, `manifest.webmanifest` and `icon.svg` at the repository root. Open the live app while online and refresh it to receive updates.
 
-Then on Chrome for Android:
-1. Open the app URL while online.
-2. Choose **Add to Home screen** / **Install app**.
-3. Open Lulu Maths from the home-screen icon.
-4. After the first load, ordinary worksheet use works offline.
-
-## Add more exercises
-Edit `exercises.js` and add more objects to an existing category:
+## Add more subtraction exercises
+Edit `exercises.js` and add items to the `subtraction` array:
 
 ```js
 {"id":"sub-021","prompt":"52 − 4 =","answer":"48"}
 ```
 
-A category is simply an array of exercise objects. The home screen creates its cards dynamically, so adding a new category such as `shapes` automatically creates a new activity card.
+Use a unique ID for each question. Pages are automatically calculated as `ceil(number of questions / 10)`, so 20 questions means 2 pages and 105 questions means 11 pages.
 
-## Important limitation
-The child’s handwriting is saved as stroke data, but this starter version does **not** automatically read handwriting to determine whether it is correct. Automatic marking can be added later with either a numeric keypad answer field or optional handwriting OCR.
+You can also use Parent / Teacher Tools inside the app to import JSON in this format:
 
+```json
+{
+  "subtraction": [
+    {"id":"sub-021","prompt":"52 − 4 =","answer":"48"}
+  ]
+}
+```
 
-### Imported exercise sets
-Exercise imports are stored in the browser's local storage, so they remain available after closing and reopening the app. If you update `exercises.js` on your hosted version, the service worker checks the app shell/exercise data online first and falls back to the cached copy when offline.
+Imported questions are saved locally in this browser. To publish questions to every device, update `exercises.js` in the hosted repository.
+
+## Notes
+- This version saves handwriting images locally with each question ID.
+- It does not automatically read stylus handwriting to grade answers yet.
+- For offline functionality, open the online app after updates once, then reopen from the Home Screen app icon.
